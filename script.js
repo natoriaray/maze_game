@@ -17,11 +17,14 @@ var UIController = (function() {
 
   return {
     drawMazeAndShapes: function() {
+      // Draw everything that wil appear on the canvas
       img.src = '../img/maze.gif';
       img.onload = function() {
-      // 1. Draw maze image to canvas
+      // Draw maze image to canvas
         context.drawImage(img, 0, 0);
+      // Draw rectangle
         UIController.drawRect();
+      // Draw circle
         UIController.drawCir();
       }
 
