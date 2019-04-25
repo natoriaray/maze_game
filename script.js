@@ -7,8 +7,11 @@ var dataController = (function(e) {
 // UI CONTROLLER
 var UIController = (function() {
 
-  var canvas = document.getElementById('mazecanvas');
-  var context = canvas.getContext('2d'); //returns methods/properties for drawing on the canvas
+  var mazeData = {
+    canvas: document.getElementById('mazecanvas'),
+    context: document.getElementById('mazecanvas').getContext('2d') //returns methods/properties for drawing on the canvas
+  };
+
   var img = new Image();
 
   return {
@@ -17,7 +20,7 @@ var UIController = (function() {
       img.src = '../img/maze.gif';
       img.onload = function() {
       // Draw maze image to canvas
-        context.drawImage(img, 0, 0);
+        mazeData.context.drawImage(img, 0, 0);
       // Draw rectangle
         UIController.drawRect();
       // Draw circle
@@ -27,17 +30,17 @@ var UIController = (function() {
     },
 
     drawRect: function() {
-      context.beginPath();
-      context.rect(24, 112, 15, 15);
-      context.fillStyle = 'blue';
-      context.fill();
+      mazeData.context.beginPath();
+      mazeData.context.rect(24, 112, 15, 15);
+      mazeData.context.fillStyle = 'blue';
+      mazeData.context.fill();
     },
 
     drawCir: function() {
-      context.beginPath();
-      context.arc(472, 32, 8, 0, 2 * Math.PI, false);
-      context.fillStyle = '#87FF45';
-      context.fill();
+      mazeData.context.beginPath();
+      mazeData.context.arc(472, 32, 8, 0, 2 * Math.PI, false);
+      mazeData.context.fillStyle = '#87FF45';
+      mazeData.context.fill();
     },
 
     moveRect: function() {
@@ -62,6 +65,11 @@ var UIController = (function() {
           break;
         default: return;
       }
+      var allowToMove = canMove(newX, newY);
+    },
+
+    getMazeData: function() {
+      return mazeData;
     }
   };
 
@@ -75,9 +83,20 @@ var controller = (function(dataCtrl, UICtrl) {
     UICtrl.drawMazeAndShapes();
   };
 
-  var setupEventListeners = function() {
-
-  }
+    var canMoveRect = function(pixelX, pixelY) {
+      var imgData = UICtrl.mazeData.context.getImageData(pixelX, pixelY, 15, 15);
+      var data = imgData.data;
+      var canMove = 1; // 1 means rectangle can move (true)
+      if (pixelX >= 0 && pixelY >= 0) { // the canvas
+        for (var i = 0; i < data.length; i += 4) {
+          if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { //black
+            canMove = 0; // 0 means rectangle cannot move (false)
+          } else if (data[i] === 51 && data[i + 1] === 232 && data[i + 2] === 51) {
+            canMove = 0;
+          }
+        }
+      }
+    };
 
   return {
     init: function () {
