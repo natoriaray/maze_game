@@ -1,9 +1,5 @@
 // DATA CONTROLLER
-var dataController = (function() {
-
-
-
-
+var dataController = (function(e) {
 
 
 })();
@@ -42,6 +38,30 @@ var UIController = (function() {
       context.arc(472, 32, 8, 0, 2 * Math.PI, false);
       context.fillStyle = '#87FF45';
       context.fill();
+    },
+
+    moveRect: function() {
+      var newX, newY;
+      e = window.event;
+      switch (e.keycode) {
+        case 38: //move up
+        case 87:
+          newY = currRectY - 3;
+          break;
+        case 40: //move down
+        case 83:
+          newY = currRectY + 3;
+          break;
+        case 39: //move right
+        case 68:
+          newX = currRectX + 3;
+          break;
+        case 37: //move left
+        case 65:
+          newX = currRectX - 3;
+          break;
+        default: return;
+      }
     }
   };
 
@@ -53,13 +73,17 @@ var controller = (function(dataCtrl, UICtrl) {
 
   var loadMaze = function() {
     UICtrl.drawMazeAndShapes();
+  };
+
+  var setupEventListeners = function() {
+
   }
 
   return {
     init: function () {
       loadMaze();
     }
-  }
+  };
 
 
 })(dataController, UIController);
