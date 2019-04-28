@@ -9,29 +9,32 @@ var UIController = (function() {
 
   var mazeData = {
     canvas: document.getElementById('mazecanvas'),
-    context: document.getElementById('mazecanvas').getContext('2d') //returns methods/properties for drawing on the canvas
+    context: document.getElementById('mazecanvas').getContext('2d'), //returns methods/properties for drawing on the canvas
+    currRectX: 24,
+    currRectY: 112
   };
 
   var img = new Image();
 
   return {
     drawMazeAndShapes: function() {
+      img.crossOrigin = "Anonymous";
       // Draw everything that wil appear on the canvas
       img.src = '../img/maze.gif';
       img.onload = function() {
       // Draw maze image to canvas
         mazeData.context.drawImage(img, 0, 0);
       // Draw rectangle
-        UIController.drawRect();
+        UIController.drawRect(mazeData.currRectX, mazeData.currRectY);
       // Draw circle
         UIController.drawCir();
       }
 
     },
 
-    drawRect: function() {
+    drawRect: function(rectX, rectY) {
       mazeData.context.beginPath();
-      mazeData.context.rect(24, 112, 15, 15);
+      mazeData.context.rect(rectX, rectY, 15, 15);
       mazeData.context.fillStyle = 'blue';
       mazeData.context.fill();
     },
@@ -49,23 +52,28 @@ var UIController = (function() {
       switch (e.keycode) {
         case 38: //move up
         case 87:
-          newY = currRectY - 3;
+          newY = mazeData.currRectY - 3;
           break;
         case 40: //move down
         case 83:
-          newY = currRectY + 3;
+          newY = mazeData.currRectY + 3;
           break;
         case 39: //move right
         case 68:
-          newX = currRectX + 3;
+          newX = mazeData.currRectX + 3;
           break;
         case 37: //move left
         case 65:
-          newX = currRectX - 3;
+          newX = mazeData.currRectX - 3;
           break;
         default: return;
       }
-      var allowToMove = canMove(newX, newY);
+      var allowToMove = controller.canMoveRect(newX, newY);
+      if (allowToMove === 1) {
+        UIController.drawRect(newX, newY);
+        mazeData.currRectX = newX;
+        mazeData.currRectY = newX;
+      }
     },
 
     getMazeData: function() {
@@ -81,22 +89,25 @@ var controller = (function(dataCtrl, UICtrl) {
 
   var loadMaze = function() {
     UICtrl.drawMazeAndShapes();
+    window.addEventListener('keydown', canMoveRect);
   };
 
-    var canMoveRect = function(pixelX, pixelY) {
-      var imgData = UICtrl.mazeData.context.getImageData(pixelX, pixelY, 15, 15);
-      var data = imgData.data;
-      var canMove = 1; // 1 means rectangle can move (true)
-      if (pixelX >= 0 && pixelY >= 0) { // the canvas
-        for (var i = 0; i < data.length; i += 4) {
-          if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { //black
-            canMove = 0; // 0 means rectangle cannot move (false)
-          } else if (data[i] === 51 && data[i + 1] === 232 && data[i + 2] === 51) {
-            canMove = 0;
+  var canMoveRect = function(pixelX, pixelY) {
+    var mazeDataObject = UICtrl.getMazeData();
+    var imgData = mazeDataObject.context.getImageData(pixelX, pixelY, 15, 15);
+    var data = imgData.data;
+    var canMove = 1; // 1 means rectangle can move (true)
+    if (pixelX >= 0 && pixelY >= 0) { // the canvas
+      for (var i = 0; i < data.length; i += 4) {
+        if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { //black
+          canMove = 0; // 0 means rectangle cannot move (false)
+        } else if (data[i] === 51 && data[i + 1] === 232 && data[i + 2] === 51) {
+          canMove = 0;
           }
         }
       }
-    };
+
+  };
 
   return {
     init: function () {
