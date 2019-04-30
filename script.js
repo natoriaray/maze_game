@@ -33,6 +33,7 @@ var UIController = (function() {
     },
 
     drawRect: function(rectX, rectY) {
+      UIController.eraseLastRect(mazeData.currRectX, mazeData.currRectY, 15, 15)
       mazeData.context.beginPath();
       mazeData.context.rect(rectX, rectY, 15, 15);
       mazeData.context.fillStyle = 'blue';
@@ -43,6 +44,14 @@ var UIController = (function() {
       mazeData.context.beginPath();
       mazeData.context.arc(472, 32, 8, 0, 2 * Math.PI, false);
       mazeData.context.fillStyle = '#87FF45';
+      mazeData.context.fill();
+    },
+
+    eraseLastRect: function (x, y, w, h) {
+      mazeData.context.beginPath();
+      mazeData.context.rect(x, y, w, h);
+      mazeData.context.closePath();
+      mazeData.context.fillStyle = 'white';
       mazeData.context.fill();
     },
 
@@ -100,10 +109,6 @@ var UIController = (function() {
           }
         }
         return canMove;
-    },
-
-    testing: function() {
-      console.log('testtest')
     }
   };
 
