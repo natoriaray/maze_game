@@ -1,8 +1,8 @@
 // DATA CONTROLLER
-var dataController = (function(e) {
+var dataController = (function(UICtrl) {
 
 
-})();
+})(UIController);
 
 // UI CONTROLLER
 var UIController = (function() {
@@ -14,13 +14,13 @@ var UIController = (function() {
     currRectY: 112
   };
 
-  var img = new Image();
 
   return {
     drawMazeAndShapes: function() {
-      img.crossOrigin = "Anonymous";
+      var img = new Image();
       // Draw everything that wil appear on the canvas
-      img.src = '../img/maze.gif';
+      img.crossOrigin = 'Anonymous';
+      img.src = 'http://localhost/images/maze.gif';
       img.onload = function() {
       // Draw maze image to canvas
         mazeData.context.drawImage(img, 0, 0);
@@ -46,9 +46,9 @@ var UIController = (function() {
       mazeData.context.fill();
     },
 
-    moveRect: function() {
+    moveRect: function(e) {
       var newX, newY;
-      e = window.event;
+      e = e || window.event;
       switch (e.keycode) {
         case 38: //move up
         case 87:
@@ -68,7 +68,8 @@ var UIController = (function() {
           break;
         default: return;
       }
-      var allowToMove = controller.canMoveRect(newX, newY);
+
+      var allowToMove = UIController.canMoveRect(newX, newY);
       if (allowToMove === 1) {
         UIController.drawRect(newX, newY);
         mazeData.currRectX = newX;
@@ -78,6 +79,27 @@ var UIController = (function() {
 
     getMazeData: function() {
       return mazeData;
+    },
+
+    canMoveRect: function(pixelX, pixelY) {
+      //var mazeDataObject = UICtrl.getMazeData();
+      var imgData = mazeData.context.getImageData(pixelX, pixelY, 15, 15);
+      var data = imgData.data;
+      var canMove = 1; // 1 means rectangle can move (true)
+      if (pixelX >= 0 && pixelY >= 0) { // the canvas
+        for (var i = 0; i < data.length; i += 4) {
+          if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { //black
+            canMove = 0; // 0 means rectangle cannot move (false)
+          } else if (data[i] === 51 && data[i + 1] === 232 && data[i + 2] === 51) {
+            canMove = 0;
+            }
+          }
+        }
+
+    },
+
+    testing: function() {
+      console.log('testtest')
     }
   };
 
@@ -89,24 +111,7 @@ var controller = (function(dataCtrl, UICtrl) {
 
   var loadMaze = function() {
     UICtrl.drawMazeAndShapes();
-    window.addEventListener('keydown', canMoveRect);
-  };
-
-  var canMoveRect = function(pixelX, pixelY) {
-    var mazeDataObject = UICtrl.getMazeData();
-    var imgData = mazeDataObject.context.getImageData(pixelX, pixelY, 15, 15);
-    var data = imgData.data;
-    var canMove = 1; // 1 means rectangle can move (true)
-    if (pixelX >= 0 && pixelY >= 0) { // the canvas
-      for (var i = 0; i < data.length; i += 4) {
-        if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { //black
-          canMove = 0; // 0 means rectangle cannot move (false)
-        } else if (data[i] === 51 && data[i + 1] === 232 && data[i + 2] === 51) {
-          canMove = 0;
-          }
-        }
-      }
-
+    window.addEventListener('keydown', UICtrl.moveRect, true);
   };
 
   return {
