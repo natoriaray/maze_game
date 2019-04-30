@@ -49,7 +49,7 @@ var UIController = (function() {
     moveRect: function(e) {
       var newX, newY;
       e = e || window.event;
-      switch (e.keycode) {
+      switch (e.keyCode) {
         case 38: //move up
         case 87:
           newY = mazeData.currRectY - 3;
@@ -95,7 +95,7 @@ var UIController = (function() {
             }
           }
         }
-
+        return canMove;
     },
 
     testing: function() {
