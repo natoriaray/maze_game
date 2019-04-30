@@ -52,25 +52,31 @@ var UIController = (function() {
       switch (e.keyCode) {
         case 38: //move up
         case 87:
+          newX = mazeData.currRectX;
           newY = mazeData.currRectY - 3;
           break;
         case 40: //move down
         case 83:
+          newX = mazeData.currRectX;
           newY = mazeData.currRectY + 3;
           break;
         case 39: //move right
         case 68:
           newX = mazeData.currRectX + 3;
+          newY = mazeData.currRectY;
           break;
         case 37: //move left
         case 65:
           newX = mazeData.currRectX - 3;
+          newY = mazeData.currRectY;
           break;
         default: return;
       }
 
       var allowToMove = UIController.canMoveRect(newX, newY);
       if (allowToMove === 1) {
+        console.log(newX);
+        console.log(newY);
         UIController.drawRect(newX, newY);
         mazeData.currRectX = newX;
         mazeData.currRectY = newX;
