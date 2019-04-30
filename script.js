@@ -75,11 +75,9 @@ var UIController = (function() {
 
       var allowToMove = UIController.canMoveRect(newX, newY);
       if (allowToMove === 1) {
-        console.log(newX);
-        console.log(newY);
         UIController.drawRect(newX, newY);
         mazeData.currRectX = newX;
-        mazeData.currRectY = newX;
+        mazeData.currRectY = newY;
       }
     },
 
