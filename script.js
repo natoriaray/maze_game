@@ -10,17 +10,20 @@ var UIController = (function() {
   var mazeData = {
     canvas: document.getElementById('mazecanvas'),
     context: document.getElementById('mazecanvas').getContext('2d'), //returns methods/properties for drawing on the canvas
-    currRectX: 24,
-    currRectY: 112
+    mazeWidth: 592,
+    mazeHeight: 482,
+    currRectX: 4,
+    currRectY: 95
   };
 
 
   return {
     drawMazeAndShapes: function() {
+      UIController.eraseLastRect(0, 0, mazeData.canvas.width, mazeData.canvas.height);
       var img = new Image();
       // Draw everything that wil appear on the canvas
       img.crossOrigin = 'Anonymous';
-      img.src = 'http://localhost/images/maze.gif';
+      img.src = 'http://localhost/images/maze.jpg';
       img.onload = function() {
       // Draw maze image to canvas
         mazeData.context.drawImage(img, 0, 0);
@@ -33,7 +36,9 @@ var UIController = (function() {
     },
 
     drawRect: function(rectX, rectY) {
-      UIController.eraseLastRect(mazeData.currRectX, mazeData.currRectY, 15, 15)
+      UIController.eraseLastRect(mazeData.currRectX, mazeData.currRectY, 15, 15);
+      mazeData.currRectX = rectX;
+      mazeData.currRectY = rectY;
       mazeData.context.beginPath();
       mazeData.context.rect(rectX, rectY, 15, 15);
       mazeData.context.fillStyle = 'blue';
@@ -42,7 +47,7 @@ var UIController = (function() {
 
     drawCir: function() {
       mazeData.context.beginPath();
-      mazeData.context.arc(472, 32, 8, 0, 2 * Math.PI, false);
+      mazeData.context.arc(453, 16, 8, 0, 2 * Math.PI, false);
       mazeData.context.fillStyle = '#87FF45';
       mazeData.context.fill();
     },
@@ -99,18 +104,20 @@ var UIController = (function() {
       var imgData = mazeData.context.getImageData(pixelX, pixelY, 15, 15);
       var data = imgData.data;
       var canMove = 1; // 1 means rectangle can move (true)
-      if (pixelX >= 0 && pixelY >= 0) { // the canvas
-        for (var i = 0; i < data.length; i += 4) {
+      if (pixelX >= 0 && pixelX <= mazeData.mazeWidth && pixelY >= 0 && pixelY <= mazeData.mazeHeight) { // the canvas
+        for (var i = 0; i < 4 * 15 * 15; i += 4) {
           if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { //black
             canMove = 0; // 0 means rectangle cannot move (false)
           } else if (data[i] === 51 && data[i + 1] === 232 && data[i + 2] === 51) {
             canMove = 0;
             }
           }
+        } else if (pixelX < 20) {
+          canMove = 0;
         }
         return canMove;
     }
-  };
+  }
 
 
 })();
